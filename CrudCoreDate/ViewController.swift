@@ -1,25 +1,57 @@
-//
-//  ViewController.swift
-//  CrudCoreDate
-//
-//  Created by jesus on 13/4/18.
-//  Copyright © 2018 jesus. All rights reserved.
-//
-
 import UIKit
+import CoreData
 
 class ViewController: UIViewController {
+    
+    @IBOutlet weak var switchActivo: UISwitch!
+    @IBOutlet weak var txtNombre: UITextField!
+    @IBOutlet weak var txtEdad: UITextField!
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+    }
+    
+    func conexion() -> NSManagedObjectContext {
+        let delegate = UIApplication.shared.delegate as! AppDelegate
+        return delegate.persistentContainer.viewContext
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    @IBAction func btnGuardar(_ sender: UIButton) {
+        let contexto = conexion()
+        let entidadPersonas = NSEntityDescription.entity(forEntityName: "Personas", in: contexto)
+        let nuevaPersona = NSManagedObject(entity: entidadPersonas!, insertInto: contexto)
+        let edadPersona = Int16(txtEdad.text!)
+        nuevaPersona.setValue(txtNombre.text, forKey: "nombre")
+        nuevaPersona.setValue(edadPersona, forKey: "edad")
+        nuevaPersona.setValue(switchActivo.isOn, forKey: "activo")
+        
+        do {
+            try contexto.save()
+            print("Registro guardado")
+            txtNombre.text = ""
+            txtEdad.text = ""
+            switchActivo.isOn = false
+        } catch let error as Error {
+            print("Error al guardar: ", error)
+        }
     }
-
-
+    
+    @IBAction func btnMostrar(_ sender: UIButton) {
+    }
+    
+    
+    @IBAction func btnBorrar(_ sender: UIButton) {
+        let contexto = conexion()
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Personas")
+        let borrar = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+        
+        do {
+            try contexto.execute(borrar)
+            print("Registros borrados")
+        } catch let error as Error {
+            print("Error:", error)
+        }
+    }
+    
 }
 
