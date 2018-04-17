@@ -36,9 +36,6 @@ class ViewController: UIViewController {
         }
     }
     
-    @IBAction func btnMostrar(_ sender: UIButton) {
-    }
-    
     
     @IBAction func btnBorrar(_ sender: UIButton) {
         let contexto = conexion()
